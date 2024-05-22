@@ -35,4 +35,36 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// serverCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	serverCmd.Flags().StringP("cert", "c", "$HOME/.config/cert400/server.crt", "CA certificate")
+	serverCmd.Flags().StringP("key", "k", "$HOME/.config/cert400/server.key", "CA private key")
+}
+func setServerParams(cmd *cobra.Command) error {
+	// Get "-f" flag parameters and configure them if not empty
+	// parameterFile, err := cmd.Flags().GetString("file")
+	// if err != nil {
+	// 	return err
+	// }
+	// if parameterFile != "" {
+	// 	playIndividualFile = true
+	// 	filePath = parameterFile
+	// }
+	//
+	// // Get "-d" flag parameters and configure them if not empty
+	// parameterDir, err := cmd.Flags().GetString("directory")
+	// if err != nil {
+	// 	return err
+	// }
+	// if parameterDir != "" {
+	// 	recurseFolders = true
+	// 	folderPath = parameterDir
+	// }
+	//
+	// debugParameter, err := cmd.Flags().GetBool("debug")
+	// if err != nil {
+	// 	return err
+	// }
+	// if debugParameter == true {
+	// 	debuggingMode = true
+	// }
+	return nil
 }
