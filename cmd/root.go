@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 raul
-
 */
+
 package cmd
 
 import (
