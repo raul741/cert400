@@ -8,6 +8,7 @@ import (
 	"embed"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -26,14 +27,25 @@ func server() {
 		listenPort = lPort
 	}
 	r := gin.Default()
-	r.Static("/css", "./cmd/templates/css")
 	LoadHTMLFromEmbedFS(r, templateFolder, "templates/*.html")
+	r.Static("/css", "./cmd/templates/css")
 
 	r.GET("/", returnIndex)
+	r.GET("/cacert", returnCacert)
 	r.POST("/api/upload", getCert)
 
 	fmt.Printf("Listening on port %v...\n", listenPort)
 	r.Run(":" + listenPort)
+}
+
+func returnCacert(c *gin.Context) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		e := fmt.Sprintf("Error happened fetching: %v\n", err)
+		c.String(http.StatusInternalServerError, e)
+		return
+	}
+	c.File(home + "/.config/cert400/ca.crt")
 }
 
 func returnIndex(c *gin.Context) {
