@@ -1,10 +1,16 @@
+/*
+Copyright © 2024 raul
+*/
+
 package cmd
 
 import (
 	"embed"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -15,6 +21,10 @@ var (
 var templateFolder embed.FS
 
 func server() {
+	lPort := viper.GetString("Server.port")
+	if lPort != "" {
+		listenPort = lPort
+	}
 	r := gin.Default()
 	r.Static("/css", "./cmd/templates/css")
 	LoadHTMLFromEmbedFS(r, templateFolder, "templates/*.html")
