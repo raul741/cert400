@@ -1,0 +1,13 @@
+[CA]
+serial_number = 2020
+organization = "Empresa SL"
+country = "ES"
+province = "Valencia"
+locality = "Valencia"
+street_address = "C/Fake Address 123"
+postal_code = "80085"
+not_after = 1
+rsa_bitsize = 3072
+
+[Server]
+port = "1302"

@@ -1,3 +1,7 @@
+/*
+Copyright © 2024 raul
+*/
+
 package cmd
 
 import (
@@ -12,6 +16,21 @@ import (
 	"math/big"
 	"os"
 	"time"
+
+	"github.com/spf13/viper"
+	//"github.com/spf13/viper"
+)
+
+var (
+	serialnumber  int
+	organization  string
+	country       string
+	province      string
+	locality      string
+	streetaddress string
+	postalcode    string
+	notafter      int
+	RSA_bitsize   int
 )
 
 func generateCA() {
@@ -19,24 +38,36 @@ func generateCA() {
 	if err != nil {
 		log.Fatalf("Error happened looking up user home directory: %v\n", err)
 	}
+	RSA_bitsize = viper.GetInt("CA.rsa_bitsize")
+	serialnumber = viper.GetInt("CA.serial_number")
+	organization = viper.GetString("CA.organization")
+	country = viper.GetString("CA.country")
+	province = viper.GetString("CA.province")
+	locality = viper.GetString("CA.locality")
+	streetaddress = viper.GetString("CA.street_address")
+	postalcode = viper.GetString("CA.postal_code")
+	notafter = viper.GetInt("CA.not_after")
+	// fmt.Println(serialnumber, organization, country, province, locality, streetaddress, postalcode, notafter)
+	// os.Exit(0)
+
 	ca := &x509.Certificate{
-		SerialNumber: big.NewInt(2024),
+		SerialNumber: big.NewInt(int64(serialnumber)),
 		Subject: pkix.Name{
-			Organization:  []string{"Company, INC."},
-			Country:       []string{"US"},
-			Province:      []string{""},
-			Locality:      []string{"San Francisco sucks"},
-			StreetAddress: []string{"Golden Gate Bridge"},
-			PostalCode:    []string{"94016"},
+			Organization:  []string{organization},
+			Country:       []string{country},
+			Province:      []string{province},
+			Locality:      []string{locality},
+			StreetAddress: []string{streetaddress},
+			PostalCode:    []string{postalcode},
 		},
 		NotBefore:             time.Now(),
-		NotAfter:              time.Now().AddDate(10, 0, 0),
+		NotAfter:              time.Now().AddDate(notafter, 0, 0),
 		IsCA:                  true,
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
 		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
 		BasicConstraintsValid: true,
 	}
-	caPrivKey, err := rsa.GenerateKey(rand.Reader, 3072)
+	caPrivKey, err := rsa.GenerateKey(rand.Reader, RSA_bitsize)
 	if err != nil {
 		log.Fatalf("Error happened generating private key: %v\n", err)
 	}
@@ -68,16 +99,16 @@ func generateCA() {
 		}
 	}
 
-	fmt.Printf("Generating %v/.config/cert400/server.key...\n", home)
+	fmt.Printf("Generating %v/.config/cert400/ca.key...\n", home)
 	// TODO: Check if keys already exist and warn the user about it
-	key, err := os.OpenFile(home+"/.config/cert400/server.key", os.O_WRONLY|os.O_CREATE, 0600)
+	key, err := os.OpenFile(home+"/.config/cert400/ca.key", os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		log.Fatalf("Error happened opening file: %v\n", err)
 	}
 	defer key.Close()
 
-	fmt.Printf("Generating %v/.config/cert400/server.cert...\n", home)
-	cert, err := os.OpenFile(home+"/.config/cert400/server.crt", os.O_WRONLY|os.O_CREATE, 0600)
+	fmt.Printf("Generating %v/.config/cert400/ca.cert...\n", home)
+	cert, err := os.OpenFile(home+"/.config/cert400/ca.crt", os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		log.Fatalf("Error happened opening file: %v\n", err)
 	}
