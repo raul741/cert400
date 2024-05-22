@@ -12,13 +12,13 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"fmt"
+	"io"
 	"log"
 	"math/big"
 	"os"
 	"time"
 
 	"github.com/spf13/viper"
-	//"github.com/spf13/viper"
 )
 
 var (
@@ -126,37 +126,81 @@ func generateCA() {
 		Type:  "RSA PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(caPrivKey),
 	})
-	// readCert, err := io.ReadAll(caPEM)
-	// if err != nil {
-	// 	log.Fatalf("Error happened preparing to write cert: %v\n", err)
-	// }
+
 	cert.WriteString(string(caPEM.Bytes()))
-
-	// readKey, err := io.ReadAll(caPrivKeyPEM)
-	// if err != nil {
-	// 	log.Fatalf("Error happened preparing to write key: %v\n", err)
-	// }
 	key.WriteString(string(caPrivKeyPEM.Bytes()))
-
 }
 
 func generateCert() {
-	// cert := &x509.Certificate{
-	// 	SerialNumber: big.NewInt(1658),
-	// 	Subject: pkix.Name{
-	// 		Organization:  []string{"LOL Company"},
-	// 		Country:       []string{"US"},
-	// 		Province:      []string{""},
-	// 		Locality:      []string{"San Francisco"},
-	// 		StreetAddress: []string{"Golden Gate Bridge"},
-	// 		PostalCode:    []string{"94016"},
-	// 	},
-	// 	PermittedDNSDomains: []string{"test.bulgariu.xyz"},
-	// 	NotBefore:           time.Now(),
-	// 	NotAfter:            time.Now().AddDate(10, 0, 0),
-	// 	SubjectKeyId:        []byte{1, 2, 3, 4, 6},
-	// 	ExtKeyUsage:         []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
-	// 	KeyUsage:            x509.KeyUsageDigitalSignature,
-	// }
+	home, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatalf("Error happened looking up user home directory: %v\n", err)
+	}
+	cert := &x509.Certificate{
+		SerialNumber: big.NewInt(1658),
+		Subject: pkix.Name{
+			Organization:  []string{"LOL Company"},
+			Country:       []string{"US"},
+			Province:      []string{""},
+			Locality:      []string{"San Francisco"},
+			StreetAddress: []string{"Golden Gate Bridge"},
+			PostalCode:    []string{"94016"},
+		},
+		PermittedDNSDomains: []string{"test.bulgariu.xyz"},
+		NotBefore:           time.Now(),
+		NotAfter:            time.Now().AddDate(10, 0, 0),
+		SubjectKeyId:        []byte{1, 2, 3, 4, 6},
+		ExtKeyUsage:         []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
+		KeyUsage:            x509.KeyUsageDigitalSignature,
+	}
+
+	certPrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
+	if err != nil {
+		log.Print(err)
+	}
+
+	////////////////////// Fetching CA data //////////////////////
+	caPath, err := os.Open(home + "/.config/cert400/ca.crt")
+	if err != nil {
+		log.Print(err)
+	}
+	defer caPath.Close()
+	caPrivPath, err := os.Open(home + "/.config/cert400/ca.key")
+	if err != nil {
+		log.Print(err)
+	}
+	defer caPrivPath.Close()
+	//////////////////////////////////////////////////////////////
+
+	caFile, err := io.ReadAll(caPath)
+	if err != nil {
+		log.Print(err)
+	}
+	caCert, err := x509.ParseCertificate(caFile)
+	if err != nil {
+		log.Print(err)
+	}
+
+	caPrivFile, err := io.ReadAll(caPrivPath)
+	if err != nil {
+		log.Print(err)
+	}
+	caPrivKey, err := x509.ParseCertificate(caPrivFile)
+
+	certBytes, err := x509.CreateCertificate(rand.Reader, cert, caCert, &certPrivKey.PublicKey, caPrivKey)
+	if err != nil {
+		log.Print(err)
+	}
+
+	certPEM := new(bytes.Buffer)
+	pem.Encode(certPEM, &pem.Block{
+		Type:  "CERTIFICATE",
+		Bytes: certBytes,
+	})
+	certPrivKeyPEM := new(bytes.Buffer)
+	pem.Encode(certPrivKeyPEM, &pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: x509.MarshalPKCS1PrivateKey(certPrivKey),
+	})
 
 }
