@@ -24,6 +24,7 @@ var (
 var templateFolder embed.FS
 
 func server() {
+	gin.SetMode(gin.ReleaseMode)
 	home, err := os.UserHomeDir()
 	if err != nil {
 		log.Printf("Error happened looking up user home directory: %v\n", err)
