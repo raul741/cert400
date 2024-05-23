@@ -149,12 +149,12 @@ func generateCert(serNumber int, clientOrg string, clientCountry string,
 			StreetAddress: []string{clientStreetAddr},
 			PostalCode:    []string{clientPostCode},
 		},
-		PermittedDNSDomains: []string{clientDomain},
-		NotBefore:           time.Now(),
-		NotAfter:            time.Now().AddDate(clientNotAfter, 0, 0),
-		SubjectKeyId:        []byte{1, 2, 3, 4, 6},
-		ExtKeyUsage:         []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
-		KeyUsage:            x509.KeyUsageDigitalSignature,
+		DNSNames:     []string{clientDomain},
+		NotBefore:    time.Now(),
+		NotAfter:     time.Now().AddDate(clientNotAfter, 0, 0),
+		SubjectKeyId: []byte{1, 2, 3, 4, 6},
+		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
+		KeyUsage:     x509.KeyUsageDigitalSignature,
 	}
 
 	certPrivKey, err := rsa.GenerateKey(rand.Reader, clientBitSize)
@@ -208,7 +208,6 @@ func generateCert(serNumber int, clientOrg string, clientCountry string,
 		Bytes: x509.MarshalPKCS1PrivateKey(certPrivKey),
 	})
 
-	log.Printf("Generating %v/.config/")
 	fmt.Printf("Generating %v/.config/cert400/clientCertificates/"+clientDomain+".key...\n", home)
 	clientkey, err := os.OpenFile(home+"/.config/cert400/clientCertificates/"+clientDomain+".key", os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
