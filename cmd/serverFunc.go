@@ -1,5 +1,5 @@
 /*
-Copyright © 2024 raul
+Copyright © 2024 raul <raul@bulgariu.xyz>
 */
 
 package cmd
@@ -7,8 +7,10 @@ package cmd
 import (
 	"embed"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -22,6 +24,11 @@ var (
 var templateFolder embed.FS
 
 func server() {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		log.Printf("Error happened looking up user home directory: %v\n", err)
+	}
+	checkFolders(home)
 	lPort := viper.GetString("Server.port")
 	if lPort != "" {
 		listenPort = lPort
@@ -32,7 +39,7 @@ func server() {
 
 	r.GET("/", returnIndex)
 	r.GET("/cacert", returnCacert)
-	r.POST("/api/upload", getCert)
+	r.POST("/api/upload", getDomainRequest)
 
 	fmt.Printf("Listening on port %v...\n", listenPort)
 	r.Run(":" + listenPort)
@@ -54,7 +61,43 @@ func returnIndex(c *gin.Context) {
 	})
 }
 
-func getCert(c *gin.Context) {
-	text, _ := c.GetPostForm("domain")
-	fmt.Println(text)
+func getDomainRequest(c *gin.Context) {
+	serNum, _ := c.GetPostForm("formSerNum")
+	serNumInt, err := strconv.Atoi(serNum)
+	if err != nil {
+		e := fmt.Sprint(err)
+		c.String(http.StatusInternalServerError, e)
+		return
+	}
+	Org, _ := c.GetPostForm("formOrg")
+	Country, _ := c.GetPostForm("formCountry")
+	Province, _ := c.GetPostForm("formProv")
+	Locality, _ := c.GetPostForm("formLocal")
+	StreetAddr, _ := c.GetPostForm("formStreet")
+	PostCode, _ := c.GetPostForm("formPostal")
+	ExpiryTime, _ := c.GetPostForm("formAge")
+	ExpiryTimeInt, err := strconv.Atoi(ExpiryTime)
+	if err != nil {
+		e := fmt.Sprint(err)
+		c.String(http.StatusInternalServerError, e)
+	}
+	BitSize, _ := c.GetPostForm("formBit")
+	BitSizeInt, err := strconv.Atoi(BitSize)
+	if err != nil {
+		e := fmt.Sprint(err)
+		c.String(http.StatusInternalServerError, e)
+		return
+	}
+	DNSName, _ := c.GetPostForm("formDNS")
+	certDownload, keyDownload, err := generateCert(serNumInt, Org,
+		Country, Province, Locality, StreetAddr,
+		PostCode, DNSName, ExpiryTimeInt, BitSizeInt)
+	if err != nil {
+		e := fmt.Sprint(err)
+		c.String(http.StatusInternalServerError, e)
+		return
+	}
+	c.File(certDownload)
+	c.File(keyDownload)
+	return
 }
