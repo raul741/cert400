@@ -9,33 +9,62 @@
   <link href="css/style.css" rel="stylesheet">
 </head>
 
+<!-- Licensed under the GPL v3.0 -->
+
 <body>
   <p>Hello {{ .UserAgent }}!</p>
   <div class="container">
     <div id="main">
-      <h1>Raul's file uploader</h1>
+      <b>
+        <p align="center"><a href="cacert">Download CA certificate</a></p>
+      </b>
+      <h1>Certificate requester</h1>
       <!-- <h3>Find the source <a href="https://git.bulgariu.xyz/raul/uploader" target="_blank">here!</a></h3> -->
       <form id='form' hx-encoding='multipart/form-data' hx-post='/api/upload'>
-        <input type="text" name="domain" value="">
+        Serial Number:
+        <input type="text" name="formSerNum" value="2024">
         <br>
+
+        Organization:
+        <input type="text" name="formOrg" value="Empresa SL">
         <br>
+
+        Country:
+        <input type="text" name="formCountry" value="ES">
+        <br>
+
+        Province:
+        <input type="text" name="formProv" value="Valencia">
+        <br>
+
+        Locality:
+        <input type="text" name="formLocal" value="Valencia">
+        <br>
+
+        Street Address:
+        <input type="text" name="formStreet" value="C/Falsa 123">
+        <br>
+
+        Postal code:
+        <input type="text" name="formPostal" value="46212">
+        <br>
+
+        # of years before expiring:
+        <input type="text" name="formAge" value="10">
+        <br>
+
+        Certificate Bitsize:
+        <input type="text" name="formBit" value="3072">
+        <br>
+
+        DNS name:
+        <input type="text" name="formDNS" value="www.example.com">
+        <br>
+
         <button id="but">
-          Upload
+          Request
         </button>
-        <!--   <progress id="progress" value="0" max="100">Upload progress:</progress> -->
       </form>
-      <!-- <script> -->
-      <!--   htmx.on('#form', 'htmx:xhr:progress', function (evt) { -->
-      <!--     htmx.find('#progress').setAttribute('value', evt.detail.loaded / evt.detail.total * 100) -->
-      <!--   }); -->
-      <!-- </script> -->
-
-      <!-- <p class="centered"> -->
-      <!-- </p> -->
-
-      <!-- <footer> -->
-      <!--   Licensed under the GPL v3.0 -->
-      <!-- </footer> -->
     </div>
 
   </div>
