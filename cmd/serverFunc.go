@@ -39,6 +39,7 @@ func server() {
 
 	r.GET("/", returnIndex)
 	r.GET("/cacert", returnCacert)
+	r.GET("/download/:domain", returnCerts)
 	r.POST("/api/upload", getDomainRequest)
 
 	fmt.Printf("Listening on port %v...\n", listenPort)
@@ -97,7 +98,31 @@ func getDomainRequest(c *gin.Context) {
 		c.String(http.StatusInternalServerError, e)
 		return
 	}
-	c.File(certDownload)
-	c.File(keyDownload)
+	result := fmt.Sprintf(`
+	<b>
+	<p align="center">
+		<a target="_blank" href="download/%v.key">Download privkey</a>
+	</p>
+	<p align="center">
+		<a target="_blank" href="download/%v.crt">Download cert</a>
+	</p>
+	</b>
+		`, DNSName, DNSName)
+	c.String(http.StatusOK, result)
+	//c.File(keyDownload)
+
+	fmt.Println(certDownload, keyDownload)
 	return
+}
+
+func returnCerts(c *gin.Context) {
+	domain := c.Param("domain")
+	base, err := os.UserHomeDir()
+	if err != nil {
+		e := fmt.Sprintf("Error happened finding user home directory: %v\n", err)
+		c.String(http.StatusInternalServerError, e)
+		return
+	}
+	c.FileAttachment(base+"/.config/cert400/clientCertificates/"+domain, domain)
+	//c.File(base + "/.config/cert400/clientCertificates/" + domain + ".key")
 }
