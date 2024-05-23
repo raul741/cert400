@@ -12,7 +12,6 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"fmt"
-	"io"
 	"log"
 	"math/big"
 	"os"
@@ -134,7 +133,8 @@ func generateCA() {
 func generateCert() {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		log.Fatalf("Error happened looking up user home directory: %v\n", err)
+		log.Printf("Error happened looking up user home directory: %v\n", err)
+		return
 	}
 	cert := &x509.Certificate{
 		SerialNumber: big.NewInt(1658),
@@ -156,40 +156,57 @@ func generateCert() {
 
 	certPrivKey, err := rsa.GenerateKey(rand.Reader, 4096)
 	if err != nil {
-		log.Print(err)
+		log.Printf("Error happened generating client privkey: %v\n", err)
+		return
 	}
 
 	////////////////////// Fetching CA data //////////////////////
-	caPath, err := os.Open(home + "/.config/cert400/ca.crt")
-	if err != nil {
-		log.Print(err)
-	}
-	defer caPath.Close()
-	caPrivPath, err := os.Open(home + "/.config/cert400/ca.key")
-	if err != nil {
-		log.Print(err)
-	}
-	defer caPrivPath.Close()
+	// caPath, err := os.Open(home + "/.config/cert400/ca.crt")
+	// if err != nil {
+	// 	log.Printf("Error happened opening CA certificate: %v\n", err)
+	// 	return
+	// }
+	// defer caPath.Close()
+	// caPrivPath, err := os.Open(home + "/.config/cert400/ca.key")
+	// if err != nil {
+	// 	log.Printf("Error happened opening CA privkey: %v\n", err)
+	// 	return
+	// }
+	// defer caPrivPath.Close()
 	//////////////////////////////////////////////////////////////
 
-	caFile, err := io.ReadAll(caPath)
+	// Parse private CA certificate /////////////////////////////
+	caFile, err := os.ReadFile(home + "/.config/cert400/ca.crt")
 	if err != nil {
-		log.Print(err)
+		log.Printf("Error happened reading from CA certificate: %v\n", err)
+		return
 	}
-	caCert, err := x509.ParseCertificate(caFile)
+	caPubBlock, _ := pem.Decode(caFile)
+	caCert, err := x509.ParseCertificate(caPubBlock.Bytes)
 	if err != nil {
-		log.Print(err)
+		log.Printf("Error happened parsing CA certificate: %v\n", err)
+		return
+	}
+	/////////////////////////////////////////////////////////////
+
+	// Parse public CA certificate /////////////////////////////
+	caPrivFile, err := os.ReadFile(home + "/.config/cert400/ca.key")
+	if err != nil {
+		log.Printf("Error happened reading from CA privkey: %v\n", err)
+		return
+	}
+	caPrivBlock, _ := pem.Decode(caPrivFile)
+	caPrivKey, err := x509.ParsePKCS1PrivateKey(caPrivBlock.Bytes)
+	if err != nil {
+		log.Printf("Error happened parsing CA privkey: %v\n", err)
+		return
 	}
 
-	caPrivFile, err := io.ReadAll(caPrivPath)
-	if err != nil {
-		log.Print(err)
-	}
-	caPrivKey, err := x509.ParseCertificate(caPrivFile)
-
+	// Generate signed client certificate
 	certBytes, err := x509.CreateCertificate(rand.Reader, cert, caCert, &certPrivKey.PublicKey, caPrivKey)
 	if err != nil {
-		log.Print(err)
+		log.Printf("Error happened signing certificate: %v\n", err)
+		return
 	}
 
 	certPEM := new(bytes.Buffer)
@@ -202,5 +219,24 @@ func generateCert() {
 		Type:  "RSA PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(certPrivKey),
 	})
+
+	fmt.Printf("Generating %v/.config/cert400/client.key...\n", home)
+	clientkey, err := os.OpenFile(home+"/.config/cert400/client.key", os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		log.Printf("Error happened opening file: %v\n", err)
+		return
+	}
+	defer clientkey.Close()
+
+	fmt.Printf("Generating %v/.config/cert400/client.cert...\n", home)
+	clientcert, err := os.OpenFile(home+"/.config/cert400/client.crt", os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		log.Printf("Error happened opening file: %v\n", err)
+		return
+	}
+	defer clientcert.Close()
+
+	clientkey.WriteString(string(certPrivKeyPEM.Bytes()))
+	clientcert.WriteString(string(certPEM.Bytes()))
 
 }
