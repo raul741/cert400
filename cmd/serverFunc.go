@@ -57,9 +57,7 @@ func returnCacert(c *gin.Context) {
 }
 
 func returnIndex(c *gin.Context) {
-	c.HTML(http.StatusOK, "templates/index.html", gin.H{
-		"UserAgent": c.Request.UserAgent(),
-	})
+	c.HTML(http.StatusOK, "templates/index.html", gin.H{})
 }
 
 func getDomainRequest(c *gin.Context) {

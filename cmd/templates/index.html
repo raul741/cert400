@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>Hello</title>
+  <title>Certificate Requester</title>
   <script src="https://unpkg.com/htmx.org@1.9.4/dist/htmx.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,14 +12,10 @@
 <!-- Licensed under the GPL v3.0 -->
 
 <body>
-  <p>Hello {{ .UserAgent }}!</p>
   <div class="container">
     <div id="main">
-      <b>
-        <p align="center"><a href="cacert">Download CA certificate</a></p>
-      </b>
-      <h1>Certificate requester</h1>
-      <!-- <h3>Find the source <a href="https://git.bulgariu.xyz/raul/uploader" target="_blank">here!</a></h3> -->
+
+      <h1>Certificate Requester</h1>
       <form id='form' hx-encoding='multipart/form-data' hx-post='/api/upload'>
         Serial Number:
         <input type="text" name="formSerNum" value="30128">
@@ -65,6 +61,10 @@
           Request
         </button>
       </form>
+      <b>
+        <p align="center"><a target="_blank" href="https://git.bulgariu.xyz/raul/cert400">Source Code</a></p>
+        <p align="center"><a href="cacert">Download CA certificate</a></p>
+      </b>
     </div>
 
   </div>
