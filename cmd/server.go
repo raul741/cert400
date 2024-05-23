@@ -19,9 +19,7 @@ var serverCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(serverCmd)
-	serverCmd.Flags().StringP("cert", "c", "$HOME/.config/cert400/server.crt", "CA certificate")
-	serverCmd.Flags().StringP("key", "k", "$HOME/.config/cert400/server.key", "CA private key")
-}
-func setServerParams(cmd *cobra.Command) error {
-	return nil
+	// TODO: Allow choosing CA certificates by parameter
+	// serverCmd.Flags().StringP("cert", "c", "$HOME/.config/cert400/server.crt", "CA certificate")
+	// serverCmd.Flags().StringP("key", "k", "$HOME/.config/cert400/server.key", "CA private key")
 }
