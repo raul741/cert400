@@ -1,3 +1,7 @@
+/*
+Copyright © 2024 raul <raul@bulgariu.xyz>
+*/
+
 package cmd
 
 import (
