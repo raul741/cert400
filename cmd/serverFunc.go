@@ -39,6 +39,13 @@ func server() {
 
 	//r.Static("/css", "./cmd/templates/css")
 	r.StaticFileFS("/css/style.css", "./templates/css/style.css", http.FS(templateFolder))
+	r.StaticFileFS("/favicon.ico", "./templates/ico/favicon.ico", http.FS(templateFolder))
+	r.StaticFileFS("/favicon-32x32.png", "./templates/ico/favicon-32x32.png", http.FS(templateFolder))
+	r.StaticFileFS("/favicon-16x16.png", "./templates/ico/favicon-16x16.png", http.FS(templateFolder))
+	r.StaticFileFS("/apple-touch-icon.png", "./templates/ico/apple-touch-icon.png", http.FS(templateFolder))
+	r.StaticFileFS("/android-chrome-512x512.png", "./templates/ico/android-chrome-512x512.png", http.FS(templateFolder))
+	r.StaticFileFS("/android-chrome-192x192.png", "./templates/ico/android-chrome-192x192.png", http.FS(templateFolder))
+	r.StaticFileFS("/site.webmanifest", "./templates/ico/site.webmanifest", http.FS(templateFolder))
 
 	r.GET("/", returnIndex)
 	r.GET("/cacert", returnCacert)
