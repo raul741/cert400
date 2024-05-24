@@ -22,43 +22,43 @@
       <h1>Certificate Requester</h1>
       <form id='form' hx-encoding='multipart/form-data' hx-post='/api/upload'>
         Serial Number:
-        <input type="text" name="formSerNum" value="30128">
+        <input type="text" name="formSerNum" value="{{ .default_serial_number }}">
         <br>
 
         Organization:
-        <input type="text" name="formOrg" value="Empresa SL">
+        <input type="text" name="formOrg" value="{{ .default_organization }}">
         <br>
 
         Country:
-        <input type="text" name="formCountry" value="ES">
+        <input type="text" name="formCountry" value="{{ .default_country }}">
         <br>
 
         Province:
-        <input type="text" name="formProv" value="Valencia">
+        <input type="text" name="formProv" value="{{ .default_province }}">
         <br>
 
         Locality:
-        <input type="text" name="formLocal" value="Valencia">
+        <input type="text" name="formLocal" value="{{ .default_locality }}">
         <br>
 
         Street Address:
-        <input type="text" name="formStreet" value="C/Falsa 123">
+        <input type="text" name="formStreet" value="{{ .default_street_address }}">
         <br>
 
         Postal code:
-        <input type="text" name="formPostal" value="46212">
+        <input type="text" name="formPostal" value="{{ .default_postal_code }}">
         <br>
 
         # of years before expiring:
-        <input type="text" name="formAge" value="10">
+        <input type="text" name="formAge" value="{{ .default_not_after }}">
         <br>
 
         Certificate Bitsize:
-        <input type="text" name="formBit" value="3072">
+        <input type="text" name="formBit" value="{{ .default_rsa_bitsize }}">
         <br>
 
         DNS name:
-        <input type="text" name="formDNS" value="www.example.com">
+        <input type="text" name="formDNS" value="{{ .default_dns_name }}">
         <br>
 
         <button id="but">
