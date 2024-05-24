@@ -63,7 +63,7 @@ func returnCacert(c *gin.Context) {
 		c.String(http.StatusInternalServerError, e)
 		return
 	}
-	c.File(home + "/.config/cert400/ca.crt")
+	c.FileAttachment(home+"/.config/cert400/ca.crt", "cacert.cer")
 }
 
 func returnIndex(c *gin.Context) {
