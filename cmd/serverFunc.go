@@ -36,7 +36,9 @@ func server() {
 	}
 	r := gin.Default()
 	LoadHTMLFromEmbedFS(r, templateFolder, "templates/*.html")
-	r.Static("/css", "./cmd/templates/css")
+
+	//r.Static("/css", "./cmd/templates/css")
+	r.StaticFileFS("/css/style.css", "./templates/css/style.css", http.FS(templateFolder))
 
 	r.GET("/", returnIndex)
 	r.GET("/cacert", returnCacert)
