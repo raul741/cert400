@@ -5,9 +5,21 @@ country = "ES"
 province = "Valencia"
 locality = "Valencia"
 street_address = "C/Fake Address 123"
-postal_code = "80085"
+postal_code = "46250"
 not_after = 10
 rsa_bitsize = 3072
 
 [Server]
 port = "1302"
+
+[Web]
+default_serial_number = 10400
+default_organization = "Empresa SL"
+default_country = "ES"
+default_province = "Valencia"
+default_locality = "Valencia"
+default_street_address = "C/Fake Address 123"
+default_postal_code = "46250"
+default_not_after = 10
+default_rsa_bitsize = 3072
+default_dns_name = "www.yourcompany.com"
