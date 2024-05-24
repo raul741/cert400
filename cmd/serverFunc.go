@@ -17,13 +17,67 @@ import (
 )
 
 var (
-	listenPort = "1302"
+	listenPort             = "1302"
+	default_serial_number  = 10245
+	default_organization   = "Empresa SL"
+	default_country        = "ES"
+	default_province       = "Valencia"
+	default_locality       = "Valencia"
+	default_street_address = "C/Fake Address 123"
+	default_postal_code    = "80085"
+	default_not_after      = 10
+	default_rsa_bitsize    = 3072
+	default_dns_name       = "www.example.com"
 )
 
 //go:embed templates/**
 var templateFolder embed.FS
 
+func defaultHTML() {
+	vipSerNum := viper.GetInt("Web.default_serial_number")
+	if vipSerNum != 0 {
+		default_serial_number = vipSerNum
+	}
+	vipDefOrg := viper.GetString("Web.default_organization")
+	if vipDefOrg != "" {
+		default_organization = vipDefOrg
+	}
+	vipDefCount := viper.GetString("Web.default_country")
+	if vipDefCount != "" {
+		default_country = vipDefCount
+	}
+	vipDefProv := viper.GetString("Web.default_province")
+	if vipDefProv != "" {
+		default_province = vipDefProv
+	}
+	vipDefLocal := viper.GetString("Web.default_locality")
+	if vipDefLocal != "" {
+		default_locality = vipDefLocal
+	}
+	vipDefStreet := viper.GetString("Web.default_street_address")
+	if vipDefStreet != "" {
+		default_street_address = vipDefStreet
+	}
+	vipDefPostal := viper.GetString("Web.default_postal_code")
+	if vipDefPostal != "" {
+		default_postal_code = vipDefPostal
+	}
+	vipNotAfter := viper.GetInt("Web.default_not_after")
+	if vipNotAfter != 0 {
+		default_not_after = vipNotAfter
+	}
+	vipRSA := viper.GetInt("Web.default_rsa_bitsize")
+	if vipRSA != 0 {
+		default_rsa_bitsize = vipRSA
+	}
+	vipDNS := viper.GetString("Web.default_dns_name")
+	if vipDNS != "" {
+		default_dns_name = vipDNS
+	}
+}
+
 func server() {
+	defaultHTML()
 	gin.SetMode(gin.ReleaseMode)
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -53,7 +107,9 @@ func server() {
 	r.POST("/api/upload", getDomainRequest)
 
 	fmt.Printf("Listening on port %v...\n", listenPort)
-	r.Run(":" + listenPort)
+	if err := r.Run(":" + listenPort); err != nil {
+		log.Fatalf("Error occurred starting server: %v\n", err)
+	}
 }
 
 func returnCacert(c *gin.Context) {
@@ -67,7 +123,18 @@ func returnCacert(c *gin.Context) {
 }
 
 func returnIndex(c *gin.Context) {
-	c.HTML(http.StatusOK, "templates/index.html", gin.H{})
+	c.HTML(http.StatusOK, "templates/index.html", gin.H{
+		"default_serial_number":  default_serial_number,
+		"default_organization":   default_organization,
+		"default_country":        default_country,
+		"default_province":       default_province,
+		"default_locality":       default_locality,
+		"default_street_address": default_street_address,
+		"default_postal_code":    default_postal_code,
+		"default_not_after":      default_not_after,
+		"default_rsa_bitsize":    default_rsa_bitsize,
+		"default_dns_name":       default_dns_name,
+	})
 }
 
 func getDomainRequest(c *gin.Context) {
