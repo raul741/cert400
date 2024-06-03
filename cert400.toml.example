@@ -8,6 +8,7 @@ street_address = "C/Fake Address 123"
 postal_code = "46250"
 not_after = 10
 rsa_bitsize = 3072
+common_name = "empresa.com"
 
 [Server]
 port = "1302"

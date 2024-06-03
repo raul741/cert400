@@ -30,6 +30,7 @@ var (
 	postalcode    string
 	notafter      int
 	RSA_bitsize   int
+	commonname    string
 )
 
 func generateCA() {
@@ -47,8 +48,7 @@ func generateCA() {
 	streetaddress = viper.GetString("CA.street_address")
 	postalcode = viper.GetString("CA.postal_code")
 	notafter = viper.GetInt("CA.not_after")
-	// fmt.Println(serialnumber, organization, country, province, locality, streetaddress, postalcode, notafter)
-	// os.Exit(0)
+	commonname = viper.GetString("CA.common_name")
 
 	ca := &x509.Certificate{
 		SerialNumber: big.NewInt(int64(serialnumber)),
@@ -59,6 +59,7 @@ func generateCA() {
 			Locality:      []string{locality},
 			StreetAddress: []string{streetaddress},
 			PostalCode:    []string{postalcode},
+			CommonName:    commonname,
 		},
 		NotBefore:             time.Now(),
 		NotAfter:              time.Now().AddDate(notafter, 0, 0),
@@ -148,6 +149,7 @@ func generateCert(serNumber int, clientOrg string, clientCountry string,
 			Locality:      []string{clientLocality},
 			StreetAddress: []string{clientStreetAddr},
 			PostalCode:    []string{clientPostCode},
+			CommonName:    clientDomain,
 		},
 		DNSNames:     []string{clientDomain},
 		NotBefore:    time.Now(),
