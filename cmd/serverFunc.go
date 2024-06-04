@@ -8,6 +8,7 @@ import (
 	"embed"
 	"fmt"
 	"log"
+	"math/rand/v2"
 	"net/http"
 	"os"
 	"strconv"
@@ -18,7 +19,6 @@ import (
 
 var (
 	listenPort             = "1302"
-	default_serial_number  = 10245
 	default_organization   = "Empresa SL"
 	default_country        = "ES"
 	default_province       = "Valencia"
@@ -34,10 +34,6 @@ var (
 var templateFolder embed.FS
 
 func defaultHTML() {
-	vipSerNum := viper.GetInt("Web.default_serial_number")
-	if vipSerNum != 0 {
-		default_serial_number = vipSerNum
-	}
 	vipDefOrg := viper.GetString("Web.default_organization")
 	if vipDefOrg != "" {
 		default_organization = vipDefOrg
@@ -124,7 +120,7 @@ func returnCacert(c *gin.Context) {
 
 func returnIndex(c *gin.Context) {
 	c.HTML(http.StatusOK, "templates/index.html", gin.H{
-		"default_serial_number":  default_serial_number,
+		"default_serial_number":  rand.IntN(20000-1) + 1,
 		"default_organization":   default_organization,
 		"default_country":        default_country,
 		"default_province":       default_province,

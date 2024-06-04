@@ -14,7 +14,6 @@ common_name = "empresa.com"
 port = "1302"
 
 [Web]
-default_serial_number = 10400
 default_organization = "Empresa SL"
 default_country = "ES"
 default_province = "Valencia"
