@@ -77,30 +77,7 @@ func generateCA() {
 		log.Fatalf("Error happened creating certificate: %v\n", err)
 	}
 
-	//////
-	//fmt.Printf("Checking %v/.config/\n", home)
-	// _, err = os.Stat(home + "/.config")
-	// if err != nil {
-	// 	if os.IsNotExist(err) {
-	// 		fmt.Printf("$HOME/.config doesn't exist, creating...\n")
-	// 		os.Mkdir(home+"/.config", 0700)
-	// 	} else {
-	// 		log.Fatalf("Error happened accessing .config: %v", err)
-	// 	}
-	// }
-
-	//fmt.Printf("Checking %v/.config/cert400\n", home)
-	// _, err = os.Stat(home + "/.config/cert400")
-	// if err != nil {
-	// 	if os.IsNotExist(err) {
-	// 		fmt.Printf("$HOME/.config/cert400 doesn't exist, creating...\n")
-	// 		os.Mkdir(home+"/.config/cert400", 0700)
-	// 	} else {
-	// 		log.Fatalf("Error happened accessing cert400: %v\n", err)
-	// 	}
-	// }
-
-	fmt.Printf("Generating %v/.config/cert400/ca.key...\n", home)
+	log.Printf("Generating %v/.config/cert400/ca.key...\n", home)
 	// TODO: Check if keys already exist and warn the user about it
 	key, err := os.OpenFile(home+"/.config/cert400/ca.key", os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
@@ -108,7 +85,7 @@ func generateCA() {
 	}
 	defer key.Close()
 
-	fmt.Printf("Generating %v/.config/cert400/ca.cert...\n", home)
+	log.Printf("Generating %v/.config/cert400/ca.cert...\n", home)
 	cert, err := os.OpenFile(home+"/.config/cert400/ca.crt", os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		log.Fatalf("Error happened opening file: %v\n", err)
@@ -210,7 +187,7 @@ func generateCert(serNumber int, clientOrg string, clientCountry string,
 		Bytes: x509.MarshalPKCS1PrivateKey(certPrivKey),
 	})
 
-	fmt.Printf("Generating %v/.config/cert400/clientCertificates/"+clientDomain+".key...\n", home)
+	log.Printf("Generating %v/.config/cert400/clientCertificates/"+clientDomain+".key...\n", home)
 	clientkey, err := os.OpenFile(home+"/.config/cert400/clientCertificates/"+clientDomain+".key", os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		e := fmt.Errorf("Error happened opening file: %v\n", err)
@@ -218,7 +195,7 @@ func generateCert(serNumber int, clientOrg string, clientCountry string,
 	}
 	defer clientkey.Close()
 
-	fmt.Printf("Generating %v/.config/cert400/clientCertificates/"+clientDomain+".crt...\n", home)
+	log.Printf("Generating %v/.config/cert400/clientCertificates/"+clientDomain+".crt...\n", home)
 	clientcert, err := os.OpenFile(home+"/.config/cert400/clientCertificates/"+clientDomain+".crt", os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		e := fmt.Errorf("Error happened opening file: %v\n", err)

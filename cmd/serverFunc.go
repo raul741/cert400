@@ -74,6 +74,7 @@ func defaultHTML() {
 
 func server() {
 	defaultHTML()
+	log.SetPrefix("[CERT400] ")
 	gin.SetMode(gin.ReleaseMode)
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -87,7 +88,6 @@ func server() {
 	r := gin.Default()
 	LoadHTMLFromEmbedFS(r, templateFolder, "templates/*.html")
 
-	//r.Static("/css", "./cmd/templates/css")
 	r.StaticFileFS("/css/style.css", "./templates/css/style.css", http.FS(templateFolder))
 	r.StaticFileFS("/favicon.ico", "./templates/ico/favicon.ico", http.FS(templateFolder))
 	r.StaticFileFS("/favicon-32x32.png", "./templates/ico/favicon-32x32.png", http.FS(templateFolder))
@@ -161,7 +161,7 @@ func getDomainRequest(c *gin.Context) {
 		return
 	}
 	DNSName, _ := c.GetPostForm("formDNS")
-	certDownload, keyDownload, err := generateCert(serNumInt, Org,
+	_, _, err = generateCert(serNumInt, Org,
 		Country, Province, Locality, StreetAddr,
 		PostCode, DNSName, ExpiryTimeInt, BitSizeInt)
 	if err != nil {
@@ -180,9 +180,6 @@ func getDomainRequest(c *gin.Context) {
 	</b>
 		`, DNSName, DNSName)
 	c.String(http.StatusOK, result)
-	//c.File(keyDownload)
-
-	fmt.Println(certDownload, keyDownload)
 	return
 }
 
@@ -195,5 +192,4 @@ func returnCerts(c *gin.Context) {
 		return
 	}
 	c.FileAttachment(base+"/.config/cert400/clientCertificates/"+domain, domain)
-	//c.File(base + "/.config/cert400/clientCertificates/" + domain + ".key")
 }
