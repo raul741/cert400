@@ -1,0 +1,18 @@
+version: '3'
+
+networks:
+  cert400:
+    driver: bridge
+
+services:
+  cert400:
+    container_name: "cert400"
+    build:
+      context: .
+      dockerfile: "Dockerfile"
+    ports:
+      - 1302:1302
+    networks:
+      - cert400
+    volumes:
+      - ./sample-config/:/root/.config/cert400/
